@@ -1,0 +1,58 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{microtype}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Autonomous Graph-RAG: A Self-Correcting, Hybrid Neuro-Symbolic Microservice for Enterprise Multi-Hop Knowledge Synthesis}
+
+\author{\IEEEauthorblockN{Ahmed Elsawy}
+\IEEEauthorblockA{\textit{Principal AI Research Scientist \& Staff ML Systems Engineer} \\
+GitHub: \url{https://github.com/Sawy05} \\
+Repository: \url{https://github.com/Sawy05/autonomous-graph-rag-agent}}
+}
+
+\maketitle
+
+\input{abstract.tex}
+
+\section{Introduction and Problem Formulation}
+\label{sec:introduction}
+Retrieval-Augmented Generation (RAG)~\cite{lewis2020rag} has emerged as the de facto paradigm for grounding Large Language Models (LLMs) on non-parametric external corpora. However, enterprise technical documentation exhibits complex topological interconnections: microservice dependencies, distributed protocol flows, authentication chains, and failure mitigation paths.
+
+Under standard Approximate Nearest Neighbor (ANN) search over bi-encoder vector embeddings (e.g., HNSW~\cite{malkov2018hnsw}, BGE~\cite{xiao2023bge}), the retriever suffers from the \textit{Relational Blindspot Failure}: queries requiring multiple deductive hops fail to retrieve bridge documents that lack direct semantic similarity to the prompt.
+
+To resolve this limitation, we formulate the hybrid neuro-symbolic retrieval task. We integrate dense vector search with Okapi BM25~\cite{robertson2009bm25}, Reciprocal Rank Fusion (RRF)~\cite{cormack2009rrf}, Cross-Encoder reranking~\cite{nogueira2019monobert}, and graph traversal over Neo4j knowledge graphs~\cite{pan2024graphrag,edge2024graphragmicrosoft}. Furthermore, we implement a cyclic self-correcting agent state machine~\cite{asai2023selfrag,shao2023iterretgen} within LangGraph that monitors retrieval relevance and iteratively rewrites queries.
+
+\input{architecture.tex}
+
+\input{experiments.tex}
+
+\section{Conclusion and Strategic Roadmap}
+\label{sec:conclusion}
+We presented \textit{Autonomous Graph-RAG}, an enterprise microservice addressing multi-hop relational synthesis. By unifying dense vector retrieval, lexical BM25, Cross-Encoder reranking, and Neo4j graph traversals within a LangGraph cyclic state machine, our system demonstrates superior context precision ($0.9490$) and verifiable provenance compliance ($100.0\%$). Future work focuses on integrating Relational Graph Convolutional Networks (R-GCN) and quantized 4-bit ONNX re-ranking engines.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

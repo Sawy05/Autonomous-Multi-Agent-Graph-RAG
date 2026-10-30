@@ -1,0 +1,46 @@
+\section{System Architecture and Agentic Formulation}
+\label{sec:architecture}
+
+The architecture of \textit{Autonomous Graph-RAG} bridges neural representation learning with symbolic graph reasoning across three decoupled subsystems: Ingestion \& Mining, Hybrid Storage, and the Cyclic Agentic State Machine.
+
+\subsection{Document Ingestion and Triple Mining}
+Let document $d \in \mathcal{D}$ be segmented into contiguous semantic chunks $\mathcal{C}(d) = \{c_1, \dots, c_m\}$ using recursive boundary-aware splitting. To ensure immutable citation references across distributed replicas, each chunk $c$ is assigned a deterministic 12-character SHA-256 identifier:
+\begin{equation}
+\text{hash}(c) = \text{SHA-256}\Big(d \parallel \text{"::"} \parallel \text{text}(c)\Big)[0:12]
+\end{equation}
+
+Concurrently, the \texttt{GraphExtractor} pipeline parses $c$ using structured schema elicitation to yield directed relational triples $t = (v_s, r, v_t)$ with confidence score $\gamma \in [0.80, 0.95]$. Relations are mapped to canonical categories:
+\begin{equation}
+\mathcal{R} = \{\text{DEPENDS\_ON}, \text{CONNECTS\_TO}, \text{STORES\_IN}, \text{AUTHENTICATES\_VIA}, \text{ORCHESTRATES}, \text{MITIGATES}\}
+\end{equation}
+
+\subsection{Hybrid Retrieval and Fusion Layer}
+Given query $q$, dense vector candidates are retrieved from Qdrant using an HNSW index over cosine metric space:
+\begin{equation}
+\text{sim}_{\text{dense}}(q, c) = \frac{\langle f_\theta(q), f_\theta(c) \rangle}{\|f_\theta(q)\|_2 \|f_\theta(c)\|_2}
+\end{equation}
+Simultaneously, an inverted index computes lexical relevance under the Okapi BM25 formulation with $k_1 = 1.5, b = 0.75$:
+\begin{equation}
+\text{score}_{\text{BM25}}(q, c) = \sum_{t \in q} \text{IDF}(t) \cdot \frac{f(t, c) \cdot (k_1 + 1)}{f(t, c) + k_1 \cdot \left(1 - b + b \cdot \frac{|c|}{\text{avgdl}}\right)}
+\end{equation}
+
+To overcome distribution divergence between unbounded BM25 scores and bounded cosine scores, candidate chunk sets are unified via Reciprocal Rank Fusion (RRF)~\cite{cormack2009rrf}:
+\begin{equation}
+\text{RRF}(c \mid q) = \frac{w_{\text{dense}}}{k_{\text{rrf}} + r_{\text{dense}}(c)} + \frac{w_{\text{sparse}}}{k_{\text{rrf}} + r_{\text{sparse}}(c)}
+\end{equation}
+where $k_{\text{rrf}} = 60, w_{\text{dense}} = 0.60, w_{\text{sparse}} = 0.40$.
+
+Top candidates from RRF undergo full cross-attentive scoring via $\text{BAAI/bge-reranker-large}$ to yield calibrated probability:
+\begin{equation}
+P_{\text{rel}}(q, c) = \sigma\Big(\mathbf{W}_{\text{proj}} \cdot \text{Transformer}([\text{CLS}] \circ q \circ [\text{SEP}] \circ c)\Big)
+\end{equation}
+
+\subsection{The Cyclic LangGraph Agentic Workflow}
+The query execution lifecycle is framed as a closed-loop discrete state machine $\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{T} \rangle$ implemented in LangGraph:
+\begin{enumerate}
+    \item \textbf{Node 1: Query Analysis (\texttt{analyze\_query}):} Decomposes query $q$ into complexity classes $\mathcal{K} \in \{\text{simple}, \text{multi\_hop}, \text{analytical}\}$, extracts seed entities $\mathcal{V}_{\text{seed}}$, and generates targeted sub-queries $\{q^{(1)}, q^{(2)}\}$.
+    \item \textbf{Node 2: Parallel Retrieval (\texttt{retrieve\_and\_aggregate}):} Concurrently executes hybrid search and multi-hop graph BFS traversal up to depth $K_{\text{hop}} = 2$ using a thread pool.
+    \item \textbf{Node 3: Self-Reflection Grader (\texttt{grade\_and\_reflect}):} Computes an empirical grounding score $\mathcal{R}(\mathcal{S}) = \min(1.0, \max_c P_{\text{rel}}(c) + 0.08 \cdot \min(3, |\mathcal{G}_{\text{triples}}|))$. If $\mathcal{R}(\mathcal{S}) < 0.65$ and retry counter $m < 2$, the agent transitions to Node 4.
+    \item \textbf{Node 4: Adaptive Query Rewriting (\texttt{rewrite\_query}):} Reformulates $q$ by appending topological entity constraints and returns to Node 2.
+    \item \textbf{Node 5: Grounded Synthesis (\texttt{generate\_grounded\_response}):} Synthesizes the final response enforcing strict citations referencing \texttt{[chunk:<hash>]} and \texttt{[node\_<id>]}.
+\end{enumerate}

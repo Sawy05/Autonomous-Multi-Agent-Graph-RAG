@@ -1,0 +1,11 @@
+\begin{abstract}
+Dense semantic vector retrieval systems powered by Approximate Nearest Neighbors (ANN) demonstrate catastrophic degradation when addressing multi-hop causal reasoning, strict provenance tracking, and topological entity-relational dependencies across enterprise corpora. Pure vector search over-indexes on surface semantic proximity while remaining blind to multi-step causal graphs, whereas classical graph traversals lack linguistic generalization. 
+
+In this paper, we present \textbf{Autonomous Graph-RAG}, a production-grade, self-correcting neuro-symbolic enterprise retrieval microservice. The system unifies: (1) asymmetric dense bi-encoder embeddings ($\text{BAAI/bge-small-en-v1.5}$, $d=384$) indexed in a Qdrant HNSW vector store; (2) sparse lexical retrieval via Okapi BM25; (3) rank-invariant Reciprocal Rank Fusion (RRF, $k=60$) coupled with cross-attentive transformer re-ranking ($\text{BAAI/bge-reranker-large}$); (4) continuous knowledge graph mining into Neo4j property graphs; and (5) a cyclic agentic state machine compiled via LangGraph featuring automated query deconstruction, parallel multi-hop traversal, and self-reflective hallucination grading with bounded query rewriting ($M=2$ cycles). Strict provenance attribution is enforced via inline citation anchors for chunk SHA-256 digests and graph node IDs.
+
+On a standardized 4-way synthetic enterprise architecture benchmark evaluated using DeepEval and Ragas, Autonomous Graph-RAG achieves a \textbf{Mean Context Precision@5 of 0.9490}, \textbf{Answer Relevance of 1.0000}, \textbf{Faithfulness of 0.8406}, and \textbf{100.0\% Citation Compliance Rate}, surpassing vanilla dense vector baselines by $+46.0\%$ in multi-hop precision while sustaining a P95 latency of $680\,\text{ms}$ under concurrent asynchronous workloads.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Retrieval-Augmented Generation, Knowledge Graphs, Neuro-Symbolic AI, Reciprocal Rank Fusion, LangGraph, Qdrant, Neo4j, LLMOps.
+\end{IEEEkeywords}

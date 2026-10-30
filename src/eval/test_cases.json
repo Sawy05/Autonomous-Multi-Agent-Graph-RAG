@@ -1,0 +1,34 @@
+[
+  {
+    "case_id": "eval_001",
+    "category": "multi_hop_reasoning",
+    "question": "How does ApolloGateway authenticate incoming requests and where does SentinelAuth persist revoked token signatures?",
+    "expected_answer": "ApolloGateway authenticates incoming requests via SentinelAuth using mutual TLS and JWT validation, while SentinelAuth persists revoked token signatures in RedisCluster.",
+    "expected_entities": ["ApolloGateway", "SentinelAuth", "RedisCluster"],
+    "seed_doc_id": "doc_auth_topology"
+  },
+  {
+    "case_id": "eval_002",
+    "category": "multi_hop_reasoning",
+    "question": "What is the downstream storage path when ChronosScheduler triggers NebulaIngestionPipeline?",
+    "expected_answer": "ChronosScheduler orchestrates NebulaIngestionPipeline, which connects to KafkaEventMesh and stores vector embeddings in QdrantVectorCluster and graph triples in Neo4jCore.",
+    "expected_entities": ["ChronosScheduler", "NebulaIngestionPipeline", "KafkaEventMesh", "QdrantVectorCluster", "Neo4jCore"],
+    "seed_doc_id": "doc_data_pipeline"
+  },
+  {
+    "case_id": "eval_003",
+    "category": "hybrid_lexical_dense",
+    "question": "How does HyperionPaymentEngine mitigate double-charge race conditions during regional failover?",
+    "expected_answer": "HyperionPaymentEngine uses CockroachDBLedger distributed serializable transactions and idempotency keys validated by SentinelAuth to prevent double-charge race conditions.",
+    "expected_entities": ["HyperionPaymentEngine", "CockroachDBLedger", "SentinelAuth"],
+    "seed_doc_id": "doc_payment_resilience"
+  },
+  {
+    "case_id": "eval_004",
+    "category": "multi_hop_reasoning",
+    "question": "Which telemetry collector aggregates metrics from QdrantVectorCluster and where are anomaly alerts routed?",
+    "expected_answer": "PrometheusScraper collects telemetry from QdrantVectorCluster and routes anomaly alerts to PagerDutyRouter via AlertManagerService.",
+    "expected_entities": ["PrometheusScraper", "QdrantVectorCluster", "AlertManagerService", "PagerDutyRouter"],
+    "seed_doc_id": "doc_observability"
+  }
+]

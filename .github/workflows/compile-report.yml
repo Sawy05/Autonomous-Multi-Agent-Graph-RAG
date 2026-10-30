@@ -1,0 +1,48 @@
+name: Compile Academic Report PDF
+
+on:
+  push:
+    paths:
+      - "docs/report/**"
+      - ".github/workflows/compile-report.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-latex-report:
+    name: Build LaTeX Thesis PDF
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: docs/report/latex
+          args: -pdf -file-line-error -interaction=nonstopmode
+
+      - name: Copy Compiled Report to docs/report/
+        run: |
+          mkdir -p docs/report
+          cp docs/report/latex/main.pdf docs/report/project_thesis_report.pdf
+
+      - name: Upload PDF Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-graph-rag-thesis
+          path: docs/report/project_thesis_report.pdf
+
+      - name: Attach PDF to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-documentation
+          name: "v1.0.0 Documentation & Academic Thesis Report"
+          body: "Automated release containing the compiled academic thesis and engineering system report for Autonomous Graph-RAG."
+          files: docs/report/project_thesis_report.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
