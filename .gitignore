@@ -84,3 +84,27 @@ coverage.xml
 *~
 .DS_Store
 Thumbs.db
+
+# LaTeX Build Artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+docs/report/latex/*.aux
+docs/report/latex/*.bbl
+docs/report/latex/*.blg
+docs/report/latex/*.log
+docs/report/latex/*.out
+docs/report/latex/*.toc
+docs/report/latex/*.fls
+docs/report/latex/*.fdb_latexmk
+docs/report/latex/*.synctex.gz
+
