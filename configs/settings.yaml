@@ -1,0 +1,53 @@
+app:
+  name: "autonomous-graph-rag-agent"
+  version: "1.0.0"
+  environment: "production"
+  log_level: "INFO"
+  host: "0.0.0.0"
+  port: 8000
+
+llm:
+  provider: "openai" # Options: openai, anthropic, ollama, vllm, mock
+  model: "gpt-4o-mini"
+  temperature: 0.0
+  max_tokens: 2048
+  base_url: "https://api.openai.com/v1"
+  timeout_seconds: 60.0
+
+ingestion:
+  chunk_size: 512
+  chunk_overlap: 64
+  min_chunk_length: 30
+  extract_graph_triples: true
+
+retrieval:
+  embedding_model: "BAAI/bge-small-en-v1.5"
+  embedding_dim: 384
+  reranker_model: "BAAI/bge-reranker-large"
+  top_k_dense: 10
+  top_k_sparse: 10
+  top_k_rerank: 5
+  rrf_k: 60
+  dense_weight: 0.6
+  sparse_weight: 0.4
+
+qdrant:
+  host: "localhost"
+  port: 6333
+  grpc_port: 6334
+  collection_name: "enterprise_knowledge_chunks"
+  in_memory: false
+
+neo4j:
+  uri: "bolt://localhost:7687"
+  username: "neo4j"
+  password: "neo4j_enterprise_pass"
+  database: "neo4j"
+  max_hops: 2
+  max_triples: 25
+
+agent:
+  max_retries: 2
+  relevance_threshold: 0.65
+  enable_self_reflection: true
+  strict_citations: true

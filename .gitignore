@@ -1,0 +1,86 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch / ML models & checkpoints
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+models/
+checkpoints/
+huggingface_cache/
+.cache/
+
+# Vector Store Caches
+.qdrant/
+qdrant_storage/
+.chroma/
+chroma_db/
+faiss_index/
+
+# Neo4j Dumps, Data & Logs
+neo4j_data/
+neo4j_logs/
+neo4j_import/
+neo4j_plugins/
+*.dump
+*.backup
+
+# Virtual Environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Testing & Static Analysis
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# IDEs & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
